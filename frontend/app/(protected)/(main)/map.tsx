@@ -344,6 +344,11 @@ export default function MapScreen() {
           backgroundColor: txtCol,
           opacity: .9
         }}
+        handleStyle={{
+          position: "absolute",
+          width: '100%',
+          top: 0,
+        }}
         animatedPosition={sheetPosition}
       >
         <MapFriendsView bottomSheetRef={bottomSheetRef} screenHeight={screenHeight} sheetPosition={sheetPosition} onSearchPress={handleSearchPress} />

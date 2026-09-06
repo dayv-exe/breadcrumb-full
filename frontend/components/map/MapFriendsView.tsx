@@ -33,8 +33,9 @@ export default function MapFriendsView({ sheetPosition, screenHeight, onSearchPr
   );
 
   return (
-    <BottomSheetView>
-      <CrumbFeed />
+    <BottomSheetView
+    >
+      <CrumbFeed onSearchPress={onSearchPress} />
     </BottomSheetView>
   )
 }

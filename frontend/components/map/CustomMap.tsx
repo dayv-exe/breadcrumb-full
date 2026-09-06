@@ -241,8 +241,8 @@ export default function CustomMap({
           <Images
             images={{
               dropped_pin: require("../../assets/map_pin.png"),
-              frame: mode === "dark" || useSatellite ? require("../../assets/map_bg_dark.png") : require("../../assets/map_bg_light.png"),
-              clusterFrame: require("../../assets/map_cluster.png"),
+              frame: require("../../assets/crumb.png"),
+              clusterFrame: require("../../assets/newcluster.png"),
               clusterFg: require("../../assets/cluster_fg.png"),
               ...(featureCollectionImages || {}),
             }}
@@ -369,7 +369,7 @@ export default function CustomMap({
           )}
 
           <Mapbox.UserLocation
-            visible
+            visible={false}
             minDisplacement={5}
             requestsAlwaysUse
             showsUserHeadingIndicator
@@ -405,9 +405,10 @@ export default function CustomMap({
           }}>
             <SymbolLayer
               id="frameLayer"
+              filter={["!", ["has", "point_count"]]}
               style={{
                 iconImage: "frame",
-                iconSize: .36,
+                iconSize: .335,
                 iconAllowOverlap: true,
                 iconAnchor: 'center',
                 iconIgnorePlacement: true,
@@ -415,26 +416,15 @@ export default function CustomMap({
             />
 
             <SymbolLayer
-              id="bgLayer"
-              style={{
-                iconImage: 'clusterFg',
-                iconSize: .3,
-                iconAllowOverlap: true,
-                iconAnchor: 'center',
-                iconOffset: [-17, -17],
-                iconIgnorePlacement: true
-              }}
-            />
-
-            <SymbolLayer
               id="textLayer"
+              filter={["!", ["has", "point_count"]]}
               style={{
                 textField: ["get", "nickname"],
                 textSize: 17,
                 textColor: Colors.light.text,
                 textIgnorePlacement: true,
                 textAllowOverlap: true,
-                textOffset: [-.275, -.25],
+                textOffset: [0, -.3],
               }}
             />
 
@@ -460,6 +450,7 @@ export default function CustomMap({
 
             <SymbolLayer
               id="pinLayer"
+              filter={["!", ["has", "point_count"]]}
               style={{
                 iconImage: ["get", "profilePicture"],
                 iconSize: .225,
@@ -475,22 +466,9 @@ export default function CustomMap({
               filter={["has", "point_count"]}
               style={{
                 iconImage: "clusterFrame",
-                iconSize: .36,
+                iconSize: .325,
                 iconAllowOverlap: true,
                 iconIgnorePlacement: true,
-              }}
-            />
-
-            <SymbolLayer
-              id="clusterimg"
-              filter={["has", "point_count"]}
-              style={{
-                iconImage: 'clusterFg',
-                iconSize: .29,
-                iconAllowOverlap: true,
-                iconAnchor: 'center',
-                iconOffset: [-26, -29],
-                iconIgnorePlacement: true
               }}
             />
 
@@ -498,12 +476,14 @@ export default function CustomMap({
               id="clusterCount"
               filter={["has", "point_count"]}
               style={{
+                textHaloColor: "black",
+                textHaloWidth: .25,
                 textField: ["concat", "+", ["get", "point_count_abbreviated"]],
-                textSize: 17,
+                textSize: 15,
                 textColor: Colors.light.text,
                 textIgnorePlacement: true,
                 textAllowOverlap: true,
-                textOffset: [-.5, -.5],
+                textOffset: [-.565, -.7],
               }}
             />
           </ShapeSource>}
