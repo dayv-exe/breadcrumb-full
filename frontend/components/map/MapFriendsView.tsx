@@ -34,7 +34,7 @@ export default function MapFriendsView({ sheetPosition, screenHeight, bottomShee
   return (
     <BottomSheetView
     >
-      <CrumbFeed />
+      <CrumbFeed sheetIsOpened={isOpened} toggleSheet={handleToggleSheet} />
     </BottomSheetView>
   )
 }

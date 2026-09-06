@@ -1,7 +1,7 @@
 import { useCrumbFeed } from "@/hooks/queries/useCrumbDbQueries";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useRouter } from "expo-router";
-import { BellIcon } from "lucide-react-native";
+import { BellIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react-native";
 import { useState } from "react";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
 import CustomButton from "../buttons/CustomButton";
@@ -10,9 +10,11 @@ import Spacer from "../Spacer";
 import CrumbFeedFriend from "./CrumbFeedFriend";
 
 interface props {
+  sheetIsOpened: boolean
+  toggleSheet: () => void
 }
 
-export default function CrumbFeed() {
+export default function CrumbFeed({ sheetIsOpened, toggleSheet }: props) {
   const {
     data: feed,
     error,
@@ -39,7 +41,22 @@ export default function CrumbFeed() {
           justifyContent: "center",
         }}
       >
-        <CustomLabel adaptToTheme bold fade fontSize={21} labelText="Friends" />
+        <CustomButton
+          freed
+          type="text"
+          customStyle={{
+            position: "absolute",
+            left: 20,
+            padding: 10
+          }}
+          handleClick={() => {
+            toggleSheet()
+          }}
+        >
+          {sheetIsOpened && <ChevronDownIcon stroke={textCol} strokeWidth={3.5} size={21} />}
+          {!sheetIsOpened && <ChevronUpIcon stroke={textCol} strokeWidth={3.5} size={21} />}
+        </CustomButton>
+        <CustomLabel adaptToTheme bold fade fontSize={21} labelText="Crumbs" />
         <CustomButton
           freed
           type="theme-faded"
