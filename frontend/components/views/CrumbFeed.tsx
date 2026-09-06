@@ -1,20 +1,43 @@
 import { useCrumbFeed } from "@/hooks/queries/useCrumbDbQueries";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { useRouter } from "expo-router";
 import { BellIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react-native";
 import { useState } from "react";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
+import { SharedValue, useAnimatedReaction } from "react-native-reanimated";
+import { scheduleOnRN } from "react-native-worklets";
 import CustomButton from "../buttons/CustomButton";
 import CustomLabel from "../CustomLabel";
 import Spacer from "../Spacer";
 import CrumbFeedFriend from "./CrumbFeedFriend";
 
 interface props {
-  sheetIsOpened: boolean
-  toggleSheet: () => void
+  screenHeight: number
+  sheetPosition: SharedValue<number>
+  bottomSheetRef: React.RefObject<BottomSheet | null>
+  onNotificationsPress: () => void
 }
 
-export default function CrumbFeed({ sheetIsOpened, toggleSheet }: props) {
+export default function CrumbFeed({ sheetPosition, screenHeight, bottomSheetRef, onNotificationsPress }: props) {
+
+  const [isOpened, setIsOpened] = useState(false)
+
+  const handleToggleSheet = () => {
+    if (!bottomSheetRef) return
+    if (isOpened) bottomSheetRef.current?.collapse()
+    else bottomSheetRef.current?.expand()
+  }
+
+  useAnimatedReaction(
+    () => sheetPosition.value < screenHeight * .8, // true = sheet is high up
+    (isSheetUp, previous) => {
+      if (isSheetUp !== previous) {
+        scheduleOnRN(setIsOpened, isSheetUp)
+      }
+    }
+  );
+
   const {
     data: feed,
     error,
@@ -30,7 +53,7 @@ export default function CrumbFeed({ sheetIsOpened, toggleSheet }: props) {
   const textCol = useThemeColor({}, "text")
 
   return (
-    <View
+    <BottomSheetView
       style={styles.container}
     >
       <View
@@ -50,14 +73,15 @@ export default function CrumbFeed({ sheetIsOpened, toggleSheet }: props) {
             padding: 10
           }}
           handleClick={() => {
-            toggleSheet()
+            handleToggleSheet()
           }}
         >
-          {sheetIsOpened && <ChevronDownIcon stroke={textCol} strokeWidth={3.5} size={21} />}
-          {!sheetIsOpened && <ChevronUpIcon stroke={textCol} strokeWidth={3.5} size={21} />}
+          {isOpened && <ChevronDownIcon stroke={textCol} strokeWidth={3.5} size={21} />}
+          {!isOpened && <ChevronUpIcon stroke={textCol} strokeWidth={3.5} size={21} />}
         </CustomButton>
         <CustomLabel adaptToTheme bold fade fontSize={21} labelText="Crumbs" />
         <CustomButton
+          handleClick={onNotificationsPress}
           freed
           type="theme-faded"
           customStyle={{
@@ -96,7 +120,7 @@ export default function CrumbFeed({ sheetIsOpened, toggleSheet }: props) {
           <CustomButton handleClick={handleFindFriends} slim type="less-prominent" paddingHorizontal={20} labelText="Find Friends" />
         </View>}
       </View>
-    </View>
+    </BottomSheetView>
   )
 }
 

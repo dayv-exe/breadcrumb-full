@@ -3,10 +3,11 @@ import CustomButton from "@/components/buttons/CustomButton";
 import CustomLabel from "@/components/CustomLabel";
 import CustomMap from "@/components/map/CustomMap";
 import MapControls from "@/components/map/MapControls";
-import MapFriendsView from "@/components/map/MapFriendsView";
+import Notifications from "@/components/map/Notifications";
 import PeoplePlaceSearch from "@/components/map/PeoplePlaceSearch";
 import CustomProfilePictureCircle from "@/components/profile/CustomProfilePictureCircle";
 import Spacer from "@/components/Spacer";
+import CrumbFeed from "@/components/views/CrumbFeed";
 import GradientView from "@/components/views/GradientView";
 import { Colors } from "@/constants/Colors";
 import { convertCoordinatesToNumberTuple } from "@/constants/mapFunctions";
@@ -148,6 +149,18 @@ export default function MapScreen() {
       reduceAnimations: false,
       showOverlay: false,
       backgroundStyle: { backgroundColor: searchBgCol }
+    })
+  }
+
+  const handleNotificationPress = () => {
+    openSheet({
+      content: (
+        <Notifications />
+      ),
+      snapPoints: [availableHeight],
+      reduceAnimations: false,
+      showOverlay: false,
+      // backgroundStyle: { backgroundColor: searchBgCol }
     })
   }
 
@@ -351,7 +364,7 @@ export default function MapScreen() {
         }}
         animatedPosition={sheetPosition}
       >
-        <MapFriendsView bottomSheetRef={bottomSheetRef} screenHeight={screenHeight} sheetPosition={sheetPosition} />
+        <CrumbFeed bottomSheetRef={bottomSheetRef} screenHeight={screenHeight} sheetPosition={sheetPosition} onNotificationsPress={handleNotificationPress} />
       </BottomSheet>
     </View >
   );
