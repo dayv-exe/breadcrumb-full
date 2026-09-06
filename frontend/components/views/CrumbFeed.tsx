@@ -56,14 +56,14 @@ export default function CrumbFeed({ onSearchPress }: props) {
       <View
         style={styles.feed}
       >
-        {(feed?.length ?? 0) > 0 && <View>
-          {
-            feed?.map(id => (
-              <CustomLabel key={id} adaptToTheme labelText={id} />
+        {(feed?.size ?? 0) > 0 && <View>
+          {feed &&
+            Array.from(feed).map(([friend_id, crumbs]) => (
+              <CustomLabel adaptToTheme key={friend_id} labelText={friend_id} />
             ))
           }
         </View>}
-        {(feed?.length ?? 0) === 0 && <View
+        {(feed?.size ?? 0) === 0 && <View
           onLayout={(e) => {
             setEmptyFeedTop((dimensions.height / 2) - e.nativeEvent.layout.height - 100)
           }}

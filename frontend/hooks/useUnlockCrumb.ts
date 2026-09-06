@@ -22,14 +22,12 @@ export function useUnlockCrumb() {
       if (coordinates) {
         const distanceUnlockedCrumbs = await unlockNearbyCrumbsByDistance(coordinates.latitude, coordinates.longitude, coordinates.accuracy ?? 0)
         if (distanceUnlockedCrumbs.length > 0) {
-          console.log("distance: ", distanceUnlockedCrumbs)
         }
       }
 
       if (nearbyPlaces) {
         const placeIdUnlockedCrumbs = await unlockNearbyCrumbsByPlace(nearbyPlaces)
         if (placeIdUnlockedCrumbs.length > 0) {
-          console.log("place: ", placeIdUnlockedCrumbs)
         }
       }
     }

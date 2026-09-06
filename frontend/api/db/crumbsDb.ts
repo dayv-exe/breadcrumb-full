@@ -287,14 +287,69 @@ export async function getCrumbsWith(otherUserid: string): Promise<Crumb[]> {
   return rows
 }
 
-export async function getCrumbFeed(): Promise<string[]> {
+export async function f_getCrumbFeed(): Promise<string[]> {
   const db = await getDb()
   const rows = await db.getAllAsync<{ friend_id: string }>(
-    `SELECT friend_id FROM chats
-     ORDER BY timestamp DESC`,
+    `
+    SELECT chats.friend_id, crumbs.id, crumbs.sender, crumbs.receiver, crumbs.unlocked, crumbs.opened FROM chats
+    LEFT JOIN crumbs ON chats.friend_id IN (crumbs.sender, crumbs.receiver)
+    ORDER BY timestamp DESC
+     `,
   )
 
   return rows.map(c => c.friend_id)
+}
+
+export async function getCrumbFeed(): Promise<Map<string, Crumb[]>> {
+  const db = await getDb()
+  const rows = await db.getAllAsync<Crumb & { friend_id: string }>(
+    `
+    SELECT
+      chats.friend_id,
+      crumbs.id,
+      crumbs.sender,
+      crumbs.receiver,
+      crumbs.latitude,
+      crumbs.longitude,
+      crumbs.unlocked,
+      crumbs.opened,
+      crumbs.formattedAddress,
+      crumbs.placename,
+      crumbs.time
+    FROM chats
+    LEFT JOIN crumbs ON chats.friend_id IN (crumbs.sender, crumbs.receiver)
+    ORDER BY chats.timestamp DESC
+    `,
+  )
+
+  const feed = new Map<string, Crumb[]>()
+  for (const row of rows) {
+    if (row.friend_id === null) continue
+    if (!feed.has(row.friend_id)) feed.set(row.friend_id, [])
+    if (row.id === null || !row.unlocked) continue
+
+    feed.get(row.friend_id)!.push({
+      id: row.id,
+      sender: row.sender,
+      receiver: row.receiver,
+      latitude: row.latitude,
+      longitude: row.longitude,
+      unlocked: Boolean(row.unlocked),
+      opened: Boolean(row.opened),
+      formattedAddress: row.formattedAddress,
+      placename: row.placename,
+      saved: false,
+      time: row.time,
+      geohash: "",
+      locationSelectionManner: "gps",
+      media: [],
+      nonCompositeId: "",
+      placeId: "",
+      radius: 0,
+    })
+  }
+
+  return feed
 }
 
 export async function getCrumbFromLocal(crumbId: string): Promise<Crumb | null> {
