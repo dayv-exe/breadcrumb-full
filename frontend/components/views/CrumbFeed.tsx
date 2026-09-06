@@ -1,10 +1,11 @@
 import { useCrumbFeed } from "@/hooks/queries/useCrumbDbQueries";
+import { useCenterOfBottomSheet } from "@/hooks/useCenterOfBottomSheet";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { useRouter } from "expo-router";
 import { BellIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react-native";
 import { useState } from "react";
-import { StyleSheet, useWindowDimensions, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { SharedValue, useAnimatedReaction } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
 import CustomButton from "../buttons/CustomButton";
@@ -45,8 +46,10 @@ export default function CrumbFeed({ sheetPosition, screenHeight, bottomSheetRef,
   } = useCrumbFeed()
 
   const nav = useRouter()
-  const dimensions = useWindowDimensions()
-  const [emptyFeedTop, setEmptyFeedTop] = useState(0)
+  const {
+    top: centerTop,
+    onLayout: onCenterLayout,
+  } = useCenterOfBottomSheet()
   const handleFindFriends = () => {
     nav.push("/find-friends")
   }
@@ -104,11 +107,9 @@ export default function CrumbFeed({ sheetPosition, screenHeight, bottomSheetRef,
           }
         </View>}
         {(feed?.size ?? 0) === 0 && <View
-          onLayout={(e) => {
-            setEmptyFeedTop((dimensions.height / 2) - e.nativeEvent.layout.height - 100)
-          }}
+          onLayout={onCenterLayout}
           style={[styles.emptyFeed, {
-            top: emptyFeedTop
+            top: centerTop
           }]}
         >
           <CustomLabel adaptToTheme fontSize={27} labelText="👀" />

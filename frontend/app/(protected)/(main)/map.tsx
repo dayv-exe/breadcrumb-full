@@ -350,8 +350,8 @@ export default function MapScreen() {
           shadowRadius: 15,
 
           backgroundColor: bgCol,
-          borderTopLeftRadius: 25,
-          borderTopRightRadius: 25,
+          borderTopLeftRadius: 35,
+          borderTopRightRadius: 35,
         }}
         handleIndicatorStyle={{
           backgroundColor: txtCol,
