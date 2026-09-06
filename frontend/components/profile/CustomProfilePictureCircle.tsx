@@ -15,10 +15,11 @@ type props = {
   handleClick?: (src: string,) => void
   backgroundColor?: string
   useUserColor?: boolean
+  flat?: boolean
   forceMode?: ColorSchemeName
 }
 
-export default function CustomProfilePictureCircle({ size = 100, handleClick, nickname, userId, customStyle, customTextStyle, borderRadius, backgroundColor, useUserColor, forceMode }: props) {
+export default function CustomProfilePictureCircle({ size = 100, handleClick, nickname, userId, customStyle, customTextStyle, borderRadius, backgroundColor, useUserColor, forceMode, flat }: props) {
   const { data: profilePicture, error: profilePictureError } = useGetProfilePicture(userId ?? "");
   const { data: userDetails } = useGetUser(userId ?? "")
   const deviceMode = useColorScheme();
@@ -29,13 +30,13 @@ export default function CustomProfilePictureCircle({ size = 100, handleClick, ni
   const bgCol = useThemeColor({}, "fadedBackgroundElevated");
   const userCol = userId ? colorForUserId(userId) : null
 
-  const url = (profilePicture && !profilePictureError) ? profilePicture?.thumbnail : null;
+  const url = (profilePicture && !profilePictureError) ? profilePicture?.thumbnailUri : null;
 
   nickname = nickname ?? ((userDetails && !profilePictureError) ? userDetails.nickname ?? "" : "")
   const parts = nickname.split(/[._]/);
   const initials = parts[0].substring(0, 1) + (parts.length > 1 ? parts[1].substring(0, 1) : "");
 
-  const gradientColors: [string, string] = backgroundColor ? [backgroundColor, backgroundColor] : mode === "light"
+  const gradientColors: [string, string] = (backgroundColor) ? [backgroundColor, backgroundColor] : mode === "light"
     ? ["#fbfbfe", "#b9b9d4"]
     : ["#54545c", "#1c1c36"];
 
@@ -63,14 +64,14 @@ export default function CustomProfilePictureCircle({ size = 100, handleClick, ni
         />
       ) : (
         <>
-          <LinearGradient
+          {!flat && <LinearGradient
             colors={gradientColors}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={[StyleSheet.absoluteFill, {
               borderRadius: 1000
             }]}
-          />
+          />}
           <Text style={[{
             fontSize: size * 0.35,
             fontWeight: "600",

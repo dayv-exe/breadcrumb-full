@@ -7,6 +7,7 @@ import { StyleSheet, useWindowDimensions, View } from "react-native";
 import CustomButton from "../buttons/CustomButton";
 import CustomLabel from "../CustomLabel";
 import Spacer from "../Spacer";
+import CrumbFeedFriend from "./CrumbFeedFriend";
 
 interface props {
   onSearchPress: () => void
@@ -39,7 +40,7 @@ export default function CrumbFeed({ onSearchPress }: props) {
           justifyContent: "center",
         }}
       >
-        <CustomLabel adaptToTheme bold fontSize={21} labelText="Crumbs" />
+        <CustomLabel adaptToTheme bold fade fontSize={21} labelText="Friends" />
         <CustomButton
           handleClick={onSearchPress}
           freed
@@ -58,8 +59,8 @@ export default function CrumbFeed({ onSearchPress }: props) {
       >
         {(feed?.size ?? 0) > 0 && <View>
           {feed &&
-            Array.from(feed).map(([friend_id, crumbs]) => (
-              <CustomLabel adaptToTheme key={friend_id} labelText={friend_id} />
+            Array.from(feed).map(([friend_id, item]) => (
+              <CrumbFeedFriend key={friend_id} friendId={friend_id} feedItem={item} />
             ))
           }
         </View>}
@@ -90,9 +91,11 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    minHeight: 80,
+    paddingTop: 25,
   },
   feed: {
+    paddingTop: 20,
+    paddingHorizontal: 25,
     width: "100%",
   },
   emptyFeed: {

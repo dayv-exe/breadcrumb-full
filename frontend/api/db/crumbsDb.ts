@@ -85,7 +85,7 @@ async function bulkUpsert<T>(
   )
 }
 
-export async function upsertCrumbs(userid: string, crumbs: Crumb[]) {
+export async function upsertCrumbs(currentUserId: string, crumbs: Crumb[]) {
   try {
     await bulkUpsert(crumbs, [
       {
@@ -103,7 +103,7 @@ export async function upsertCrumbs(userid: string, crumbs: Crumb[]) {
           crumb.longitude,
           crumb.sender,
           crumb.receiver,
-          (crumb.sender === userid ? "sent" : "received") as CrumbMailbox,
+          (crumb.sender === currentUserId ? "sent" : "received") as CrumbMailbox,
           crumb.unlocked ? 1 : 0,
           crumb.opened ? 1 : 0,
           crumb.time,
@@ -126,16 +126,13 @@ export async function upsertCrumbs(userid: string, crumbs: Crumb[]) {
       {
         // move friend to the top of the chat list when a new crumb is shared with them
         table: "chats",
-        columns: ["friend_id", "timestamp", "friendshipStartTimestamp"],
+        columns: ["friend_id", "action", "timestamp"],
         conflictColumns: ["friend_id"],
         toRows: (crumb => [[
-          crumb.sender !== userid ? crumb.sender : crumb.receiver,
-          crumb.time,
+          crumb.sender !== currentUserId ? crumb.sender : crumb.receiver,
+          crumb.sender === currentUserId ? "Sent" : "Received",
           crumb.time,
         ]]),
-        columnMerge: {
-          friendshipStartTimestamp: "fillIfNull"
-        }
       },
     ])
   } catch (error) {
@@ -143,7 +140,7 @@ export async function upsertCrumbs(userid: string, crumbs: Crumb[]) {
   }
 }
 
-export async function upsertChats(otherUserid: string, timestamp: string) {
+export async function upsertChats(otherUserid: string, action: string, timestamp: string) {
   const chat: { friend_id: string, timestamp: string } = {
     friend_id: otherUserid,
     timestamp: timestamp,
@@ -155,16 +152,13 @@ export async function upsertChats(otherUserid: string, timestamp: string) {
         conflictColumns: ["friend_id"],
         onConflict: "update",
         columns: [
-          "friend_id", "timestamp", "friendshipStartTimestamp"
+          "friend_id", "action", "timestamp",
         ],
         toRows: (chat) => [[
           chat.friend_id,
-          chat.timestamp,
+          action,
           chat.timestamp,
         ]],
-        columnMerge: {
-          friendshipStartTimestamp: "fillIfNull",
-        }
       }
     ])
   } catch (error) {
@@ -287,25 +281,17 @@ export async function getCrumbsWith(otherUserid: string): Promise<Crumb[]> {
   return rows
 }
 
-export async function f_getCrumbFeed(): Promise<string[]> {
-  const db = await getDb()
-  const rows = await db.getAllAsync<{ friend_id: string }>(
-    `
-    SELECT chats.friend_id, crumbs.id, crumbs.sender, crumbs.receiver, crumbs.unlocked, crumbs.opened FROM chats
-    LEFT JOIN crumbs ON chats.friend_id IN (crumbs.sender, crumbs.receiver)
-    ORDER BY timestamp DESC
-     `,
-  )
-
-  return rows.map(c => c.friend_id)
+export type FeedItem = {
+  action: string
+  crumbs: Crumb[]
 }
-
-export async function getCrumbFeed(): Promise<Map<string, Crumb[]>> {
+export async function getCrumbFeed(): Promise<Map<string, FeedItem>> {
   const db = await getDb()
-  const rows = await db.getAllAsync<Crumb & { friend_id: string }>(
+  const rows = await db.getAllAsync<Crumb & { friend_id: string, action: string }>(
     `
     SELECT
       chats.friend_id,
+      chats.action,
       crumbs.id,
       crumbs.sender,
       crumbs.receiver,
@@ -322,13 +308,16 @@ export async function getCrumbFeed(): Promise<Map<string, Crumb[]>> {
     `,
   )
 
-  const feed = new Map<string, Crumb[]>()
+  const feed = new Map<string, FeedItem>()
   for (const row of rows) {
     if (row.friend_id === null) continue
-    if (!feed.has(row.friend_id)) feed.set(row.friend_id, [])
+    if (!feed.has(row.friend_id)) feed.set(row.friend_id, {
+      action: row.action,
+      crumbs: []
+    })
     if (row.id === null || !row.unlocked) continue
 
-    feed.get(row.friend_id)!.push({
+    feed.get(row.friend_id)!.crumbs.push({
       id: row.id,
       sender: row.sender,
       receiver: row.receiver,
