@@ -10,10 +10,9 @@ interface props {
   screenHeight: number
   sheetPosition: SharedValue<number>
   bottomSheetRef: React.RefObject<BottomSheet | null>
-  onSearchPress: () => void
 }
 
-export default function MapFriendsView({ sheetPosition, screenHeight, onSearchPress, bottomSheetRef }: props) {
+export default function MapFriendsView({ sheetPosition, screenHeight, bottomSheetRef }: props) {
   const textCol = useThemeColor({}, "text")
   const [isOpened, setIsOpened] = useState(false)
 
@@ -35,7 +34,7 @@ export default function MapFriendsView({ sheetPosition, screenHeight, onSearchPr
   return (
     <BottomSheetView
     >
-      <CrumbFeed onSearchPress={onSearchPress} />
+      <CrumbFeed />
     </BottomSheetView>
   )
 }

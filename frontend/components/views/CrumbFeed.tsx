@@ -1,7 +1,7 @@
 import { useCrumbFeed } from "@/hooks/queries/useCrumbDbQueries";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useRouter } from "expo-router";
-import { SearchIcon } from "lucide-react-native";
+import { BellIcon } from "lucide-react-native";
 import { useState } from "react";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
 import CustomButton from "../buttons/CustomButton";
@@ -10,10 +10,9 @@ import Spacer from "../Spacer";
 import CrumbFeedFriend from "./CrumbFeedFriend";
 
 interface props {
-  onSearchPress: () => void
 }
 
-export default function CrumbFeed({ onSearchPress }: props) {
+export default function CrumbFeed() {
   const {
     data: feed,
     error,
@@ -42,7 +41,6 @@ export default function CrumbFeed({ onSearchPress }: props) {
       >
         <CustomLabel adaptToTheme bold fade fontSize={21} labelText="Friends" />
         <CustomButton
-          handleClick={onSearchPress}
           freed
           type="theme-faded"
           customStyle={{
@@ -51,7 +49,7 @@ export default function CrumbFeed({ onSearchPress }: props) {
             padding: 10
           }}
         >
-          <SearchIcon stroke={textCol} strokeWidth={3.5} size={18} />
+          <BellIcon stroke={textCol} strokeWidth={3.5} size={18} />
         </CustomButton>
       </View>
       <View

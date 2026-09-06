@@ -19,7 +19,7 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import Mapbox from "@rnmapbox/maps";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
-import { BellIcon, ChevronDownIcon } from "lucide-react-native";
+import { ChevronDownIcon, SearchIcon } from "lucide-react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { Animated, Dimensions, StyleSheet, useColorScheme, View } from "react-native";
 import { useAnimatedReaction, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
@@ -257,9 +257,9 @@ export default function MapScreen() {
               customStyle={[styles.shadow, {
                 padding: 10,
               }]}
-              handleClick={() => { }}
+              handleClick={handleSearchPress}
             >
-              <BellIcon stroke={getHeaderColors().fgColor} strokeWidth={3} />
+              <SearchIcon stroke={getHeaderColors().fgColor} strokeWidth={3} />
             </CustomButton>
             <CustomProfilePictureCircle size={40} handleClick={() => {
               nav.push("/(protected)/(main)/profile")
@@ -351,7 +351,7 @@ export default function MapScreen() {
         }}
         animatedPosition={sheetPosition}
       >
-        <MapFriendsView bottomSheetRef={bottomSheetRef} screenHeight={screenHeight} sheetPosition={sheetPosition} onSearchPress={handleSearchPress} />
+        <MapFriendsView bottomSheetRef={bottomSheetRef} screenHeight={screenHeight} sheetPosition={sheetPosition} />
       </BottomSheet>
     </View >
   );
