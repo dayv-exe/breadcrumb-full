@@ -9,7 +9,6 @@ export default {
     icon: "./assets/images/icon.png",
     scheme: "breadcrumb",
     userInterfaceStyle: "automatic",
-    newArchEnabled: true,
     ios: {
       supportsTablet: true,
       bundleIdentifier: "com.dayv-exe.Breadcrumb",
@@ -19,7 +18,6 @@ export default {
         foregroundImage: "./assets/images/adaptive-icon.png",
         backgroundColor: "#ffffff",
       },
-      edgeToEdgeEnabled: true,
       package: "com.dayvexe.breadcrumb",
     },
     web: {
@@ -30,6 +28,12 @@ export default {
     plugins: [
       [
         "react-native-compressor"
+      ],
+      [
+        "expo-image"
+      ],
+      [
+        "expo-video"
       ],
       [
         "react-native-vision-camera",
