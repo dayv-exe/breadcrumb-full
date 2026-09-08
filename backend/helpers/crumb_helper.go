@@ -108,6 +108,7 @@ func (h *crumbHelper) GetCrumb(otherUser, crumbId string) (*models.Crumb, error)
 		nil,
 		aws.String("GSIndex"),
 		expr,
+		nil,
 		aws.Int32(1),
 		func(c []map[string]types.AttributeValue) []models.Crumb {
 			return *models.ConvertToCrumbs(c, func(c *models.Crumb) {
@@ -120,12 +121,6 @@ func (h *crumbHelper) GetCrumb(otherUser, crumbId string) (*models.Crumb, error)
 	}
 
 	return &result.Items[0], nil
-}
-
-func (h *crumbHelper) OpenCrumb(crumbId string) ([]resItem, error) {
-	// todo: some type of check for location spoofing
-	// then
-	return h.getCrumbContent(crumbId)
 }
 
 func (h *crumbHelper) CrumbExists(ownerId, crumbNonCompositeId string) (bool, error) {
@@ -146,6 +141,7 @@ func (h *crumbHelper) CrumbExists(ownerId, crumbNonCompositeId string) (bool, er
 		nil,
 		aws.String("GSIndex2"),
 		expr,
+		nil,
 		aws.Int32(1),
 		func(item []map[string]types.AttributeValue) []models.Crumb {
 			return *models.ConvertToCrumbs(item, nil)
@@ -208,6 +204,7 @@ func (h *crumbHelper) GetLatestCrumbs(timestamp, crumbId, otherUser string) (*qu
 		nil,
 		expr,
 		nil,
+		nil,
 		func(c []map[string]types.AttributeValue) []models.Crumb {
 			return *models.ConvertToCrumbs(c, func(c *models.Crumb) {
 			})
@@ -215,14 +212,19 @@ func (h *crumbHelper) GetLatestCrumbs(timestamp, crumbId, otherUser string) (*qu
 	)
 }
 
-type resItem struct {
+type content struct {
 	Index     int    `json:"index"`
 	Media     string `json:"media"`
 	Thumbnail string `json:"thumbnail"`
 	Caption   string `json:"caption,omitempty"`
 }
+type resItem struct {
+	Latitude  float64
+	Longitude float64
+	Content   []content
+}
 
-func (h *crumbHelper) getCrumbContent(crumbId string) ([]resItem, error) {
+func (h *crumbHelper) GetCrumbContent(crumbId string) (*resItem, error) {
 	helper := newHelper(h.Ctx, nil)
 	var crumb models.Crumb
 	userid := utils.GetAuthenticatedUserid()
@@ -241,6 +243,8 @@ func (h *crumbHelper) getCrumbContent(crumbId string) ([]resItem, error) {
 	proj := expression.NamesList(
 		expression.Name("caption"),
 		expression.Name("media"),
+		expression.Name("latitude"),
+		expression.Name("longitude"),
 	)
 
 	expr, err := expression.NewBuilder().WithKeyCondition(keyCond).WithProjection(proj).Build()
@@ -254,6 +258,7 @@ func (h *crumbHelper) getCrumbContent(crumbId string) ([]resItem, error) {
 		nil,
 		aws.String("GSIndex"),
 		expr,
+		nil,
 		aws.Int32(1),
 		func(c []map[string]types.AttributeValue) []models.Crumb {
 			return *models.ConvertToCrumbs(c, nil)
@@ -270,14 +275,14 @@ func (h *crumbHelper) getCrumbContent(crumbId string) ([]resItem, error) {
 
 	crumb = result.Items[0]
 
-	res := make([]resItem, len(crumb.Media))
+	res := make([]content, len(crumb.Media))
 	cloudfrontHelper := NewCloudfrontHelper(h.Ctx)
 
 	for _, media := range crumb.Media {
 		mediaKey, _, _ := cloudfrontHelper.GetSignedUrl(media.MediaKey, constants.CRUMB_MEDIA_URL_TTL)
 		thumbnailKey, _, _ := cloudfrontHelper.GetSignedUrl(media.ThumbnailKey, constants.CRUMB_MEDIA_URL_TTL)
 
-		res[media.Index] = resItem{
+		res[media.Index] = content{
 			Index:     media.Index,
 			Media:     mediaKey,
 			Thumbnail: thumbnailKey,
@@ -285,5 +290,9 @@ func (h *crumbHelper) getCrumbContent(crumbId string) ([]resItem, error) {
 		}
 	}
 
-	return res, nil
+	return &resItem{
+		Latitude:  crumb.Latitude,
+		Longitude: crumb.Longitude,
+		Content:   res,
+	}, nil
 }

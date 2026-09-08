@@ -87,6 +87,7 @@ func (this *userHelper) findAllWithNickname(nickname string) (*[]models.User, er
 		aws.String("GSIndex"),
 		expr,
 		nil,
+		nil,
 		this.sliceTypeConverter,
 	)
 
@@ -317,7 +318,7 @@ func (u *userHelper) GetProfilePicKeys(userId string) (models.CrumbMedia, error)
 	}
 
 	helper := newHelper(u.Ctx, nil)
-	result, err := QueryItems(helper, nil, nil, expr, aws.Int32(1), func(m []map[string]types.AttributeValue) []models.CrumbMedia {
+	result, err := QueryItems(helper, nil, nil, expr, nil, aws.Int32(1), func(m []map[string]types.AttributeValue) []models.CrumbMedia {
 		users := models.ConvertToUsers(m)
 		keys := make([]models.CrumbMedia, 0)
 		for _, user := range *users {

@@ -3,6 +3,7 @@ package handlers
 import (
 	"backend/helpers"
 	"backend/models"
+	"backend/utils"
 	"context"
 	"strings"
 
@@ -16,10 +17,22 @@ func handleOpenCrumb(ctx context.Context, req events.APIGatewayV2HTTPRequest) (e
 		return models.InvalidRequestErrorResponse("No crumb id provided!"), nil
 	}
 
-	content, err := helpers.NewCrumbHelper(ctx).OpenCrumb(crumbId)
+	crumb, err := helpers.NewCrumbHelper(ctx).GetCrumbContent(crumbId)
 	if err != nil {
 		return models.ServerSideErrorResponse("Failed to open crumb, try again!", err), nil
 	}
 
-	return models.SuccessfulGetRequestResponse(content, nil), nil
+	validLocation, err := helpers.NewLocationHelper(ctx).UsersCurrentLocationIsValid(
+		utils.Coordinate{Latitude: crumb.Latitude, Longitude: crumb.Longitude},
+	)
+
+	if err != nil {
+		return models.ServerSideErrorResponse("Failed to determine your location!", err), nil
+	}
+
+	if !validLocation {
+		return models.ForbiddenErrorResponse("Unable to determine your location"), nil
+	}
+
+	return models.SuccessfulGetRequestResponse(crumb.Content, nil), nil
 }

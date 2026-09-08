@@ -271,11 +271,16 @@ type queryResult[T any] struct {
 	LastEvaluatedKey map[string]types.AttributeValue
 }
 
-func QueryItems[T any](deps *helper, lastEvaluatedKey *map[string]types.AttributeValue, indexName *string, expression expression.Expression, limit *int32, convertToStructs sliceConversionFunc[T]) (*queryResult[T], error) {
+func QueryItems[T any](deps *helper, lastEvaluatedKey *map[string]types.AttributeValue, indexName *string, expression expression.Expression, scanIndexForward *bool, limit *int32, convertToStructs sliceConversionFunc[T]) (*queryResult[T], error) {
+
+	if scanIndexForward == nil {
+		scanIndexForward = aws.Bool(true)
+	}
 
 	input := &dynamodb.QueryInput{
-		TableName: &deps.TableName,
-		Limit:     limit,
+		TableName:        &deps.TableName,
+		Limit:            limit,
+		ScanIndexForward: scanIndexForward,
 	}
 
 	if expression.KeyCondition() != nil {

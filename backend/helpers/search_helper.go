@@ -50,6 +50,7 @@ func (this *searchHelper) SearchUser(searchStr string) (*[]models.UserDisplayInf
 				nil,
 				nil,
 				expr,
+				nil,
 				aws.Int32(15),
 				func(m []map[string]types.AttributeValue) []models.UserDisplayInfo {
 					return *models.SearchItemsToUserInfoStruct(m)

@@ -137,6 +137,7 @@ func (this *friendshipHelper) GetAllFriends(userId string, includeUserProfile bo
 		lastEvalKey,
 		nil,
 		expr,
+		nil,
 		limit,
 		func(m []map[string]types.AttributeValue) []models.UserDisplayInfo {
 			return *models.FriendItemsToUserDisplayStructs(m)
@@ -173,6 +174,7 @@ func (this *friendshipHelper) GetAllFriendRequests(userId string, lastEvaluatedK
 		lastEvaluatedKey,
 		nil,
 		expr,
+		nil,
 		limit,
 		func(m []map[string]types.AttributeValue) []models.UserDisplayInfo {
 			return *models.FriendRequestItemsToUserDisplayStructs(m)
