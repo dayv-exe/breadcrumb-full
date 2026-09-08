@@ -445,19 +445,10 @@ Resources:
             Auth:
               Authorizer: CognitoAuthorizer
 
-        GetCrumb:
-          Type: HttpApi
-          Properties:
-            Path: /api/v1/crumbs/{id}
-            Method: GET
-            ApiId: !Ref BreadApi
-            Auth:
-              Authorizer: CognitoAuthorizer
-
         OpenCrumb:
           Type: HttpApi
           Properties:
-            Path: /api/v1/crumbs/{id}/open
+            Path: /api/v1/crumbs/{id}
             Method: GET
             ApiId: !Ref BreadApi
             Auth:

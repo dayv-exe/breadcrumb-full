@@ -122,9 +122,10 @@ func (h *crumbHelper) GetCrumb(otherUser, crumbId string) (*models.Crumb, error)
 	return &result.Items[0], nil
 }
 
-func (h *crumbHelper) OpenCrumb(otherUser, crumbId string) ([]resItem, error) {
-	// based on location manner, do a check to see if user can open crumb
-	return h.getCrumbContent(otherUser, crumbId)
+func (h *crumbHelper) OpenCrumb(crumbId string) ([]resItem, error) {
+	// todo: some type of check for location spoofing
+	// then
+	return h.getCrumbContent(crumbId)
 }
 
 func (h *crumbHelper) CrumbExists(ownerId, crumbNonCompositeId string) (bool, error) {
@@ -221,7 +222,7 @@ type resItem struct {
 	Caption   string `json:"caption,omitempty"`
 }
 
-func (h *crumbHelper) getCrumbContent(otherUser, crumbId string) ([]resItem, error) {
+func (h *crumbHelper) getCrumbContent(crumbId string) ([]resItem, error) {
 	helper := newHelper(h.Ctx, nil)
 	var crumb models.Crumb
 	userid := utils.GetAuthenticatedUserid()
@@ -231,9 +232,9 @@ func (h *crumbHelper) getCrumbContent(otherUser, crumbId string) ([]resItem, err
 		expression.Key("gsi"),
 		expression.Value(models.CrumbPkPrefix+userid),
 	).And(
-		expression.KeyEqual(
+		expression.KeyBeginsWith(
 			expression.Key("gsiSk"),
-			expression.Value(models.CrumbIdPrefix+crumbId+models.CrumbOtherUserPrefix+otherUser),
+			models.CrumbIdPrefix+crumbId+models.CrumbOtherUserPrefix,
 		),
 	)
 
