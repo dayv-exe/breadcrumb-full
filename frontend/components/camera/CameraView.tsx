@@ -2,7 +2,7 @@ import { MAX_VIDEO_DURATION_MILLISECONDS } from "@/constants/appConstants";
 import { useCamera } from "@/hooks/useCamera";
 import { useMediaPermissions } from "@/hooks/usePermissions";
 import { useMediaStore } from "@/utils/mediaStore";
-import { useIsFocused } from "@react-navigation/native";
+import { useIsFocused } from "expo-router";
 import React from "react";
 import { useWindowDimensions, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";

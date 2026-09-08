@@ -60,11 +60,8 @@ export function useUploadMedia({
       formData.append(key, value);
     }
 
-    formData.append("file", {
-      uri: file.fileName,
-      type: file.contentType,
-      name: file.mediaKey,
-    } as any);
+    const localFile = new File(file.fileName);
+    formData.append("file", localFile, file.mediaKey);
 
     const response = await fetch(file.uploadUrl, {
       method: "POST",
@@ -137,7 +134,7 @@ export function useUploadMedia({
         return validFile;
       } catch (error) {
         lastError = error;
-        
+
         const canRetry = attempt < maxRetries && isRetryable(error);
         if (!canRetry) {
           updateUploadState(media.id, {

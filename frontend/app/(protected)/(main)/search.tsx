@@ -11,10 +11,8 @@ import SunkenView from "@/components/views/SunkenView";
 import { MAX_SEARCH_STRING_CHARS } from "@/constants/appConstants";
 import { useSearchUserApi } from "@/hooks/queries/useUserApi";
 import { debounce } from "@/utils/debounce";
-import { showSettingsAlert } from "@/utils/helpers";
-import { useIsFocused } from "@react-navigation/native";
 import * as Contacts from "expo-contacts";
-import { useRouter } from "expo-router";
+import { useIsFocused, useRouter } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FlatList, ListRenderItem, StyleSheet, TextInput, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
@@ -76,22 +74,6 @@ type matchingContactsProps = {
   searchStr: string
   contacts: Contacts.Contact[]
 }
-function MatchingContacts({ searchStr, contacts }: matchingContactsProps) {
-  return (
-    <View>
-      {
-        contacts.filter(contact => contact.name.includes(searchStr)).map(c => {
-          return (
-            <View key={c.name + Math.random()}>
-              <CustomLabel labelText={c.name} />
-              <CustomButton labelText="Invite" />
-            </View>
-          )
-        })
-      }
-    </View>
-  )
-}
 
 const HISTORY = [
   { id: "1", nickname: "mad.max", name: "maxwell" }
@@ -107,21 +89,6 @@ export default function SearchScreen() {
   const inputRef = useRef<TextInput>(null)
   const isInFocus = useIsFocused()
   const insets = useSafeAreaInsets()
-
-  async function getContacts() {
-    const { granted } = await Contacts.requestPermissionsAsync();
-    if (granted) {
-      const { data } = await Contacts.getContactsAsync({
-        fields: [Contacts.Fields.Name],
-      });
-      setContacts(data)
-      setContactPermission(true)
-    } else {
-      setContactPermission(false)
-      showSettingsAlert("Contacts", "Allow the app to access your contacts so you can easily invite friends.", false)
-    }
-
-  }
 
   useEffect(() => {
     // focus on search bar when page is shown

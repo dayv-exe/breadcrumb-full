@@ -1,7 +1,7 @@
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme.web';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { BottomTabBarProps } from 'expo-router/build/react-navigation/bottom-tabs';
 import React from 'react';
 import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -20,14 +20,7 @@ type CustomTabLabelProps = {
 
 function CustomTabIcon({ name, focused, darkMode, size = 21 }: CustomTabIconProps) {
   return (
-    <Image
-      source={getIconImage(name as any, focused, darkMode)}
-      style={{
-        width: size,
-        height: size,
-      }}
-      resizeMode="contain"
-    />
+    
   );
 }
 

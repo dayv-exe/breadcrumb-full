@@ -1,15 +1,5 @@
-import { ParamListBase } from "@react-navigation/native";
-import { StackNavigationOptions } from "@react-navigation/stack";
 import { ReactNode } from "react";
 import { AnimatableNumericValue, ViewStyle } from "react-native";
-
-export type ScreenType<ParamList extends ParamListBase> = {
-  name: Extract<keyof ParamList, string>;
-  component: React.ComponentType<any>;
-  options?: StackNavigationOptions;
-}
-
-export type ScreenName<ParamList extends ParamListBase> = Extract<keyof ParamList, string>
 
 export type BottomSheetOptions = {
   content: ReactNode
