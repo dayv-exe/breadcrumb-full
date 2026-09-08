@@ -1,4 +1,4 @@
-import { getCrumbMarkers, getLatestCrumbs, uploadCrumbMetadata } from "@/api/crumbsApi";
+import { getCrumbMarkers, getLatestCrumbs, openCrumb, uploadCrumbMetadata } from "@/api/crumbsApi";
 import { Crumb } from "@/api/models/crumb";
 import { TIME } from "@/constants/appConstants";
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
@@ -21,4 +21,9 @@ export const useGetCrumbMarkers = () => useQuery({
   queryKey: ["crumb", "markers"],
   staleTime: 1 * TIME.HOUR,
   enabled: true,
+})
+
+export const useOpenCrumb = (crumbId: string) => useQuery({
+  queryFn: () => openCrumb(crumbId),
+  queryKey: ["opened-crumb", crumbId],
 })
