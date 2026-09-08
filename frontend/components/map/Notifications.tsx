@@ -1,12 +1,20 @@
 import { useCenterOfBottomSheet } from "@/hooks/useCenterOfBottomSheet";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import { ChevronDownIcon } from "lucide-react-native";
 import { StyleSheet, View } from "react-native";
 import CustomLabel from "../CustomLabel";
+import CustomButton from "../buttons/CustomButton";
 
-export default function Notifications() {
+interface props {
+  onHideNotifications: () => void
+}
+
+export default function Notifications({ onHideNotifications }: props) {
   const {
     top: centerTop,
     onLayout: onCenterLayout
   } = useCenterOfBottomSheet()
+  const textCol = useThemeColor({}, "text")
 
   return (
     <View
@@ -15,6 +23,17 @@ export default function Notifications() {
       <View
         style={styles.header}
       >
+        <CustomButton
+          freed
+          type="text"
+          customStyle={{
+            position: "absolute",
+            left: 20,
+          }}
+          handleClick={onHideNotifications}
+        >
+          <ChevronDownIcon stroke={textCol} strokeWidth={3.5} size={23} />
+        </CustomButton>
         <CustomLabel adaptToTheme bold fade fontSize={21} labelText="Notifications" />
       </View>
 
@@ -24,8 +43,8 @@ export default function Notifications() {
         }]}
         onLayout={onCenterLayout}
       >
-        <CustomLabel adaptToTheme fontSize={32} labelText="👍" />
-        <CustomLabel adaptToTheme fontSize={16} labelText="all clear here!" />
+        {/* <CustomLabel adaptToTheme fontSize={32} labelText="👍" /> */}
+        <CustomLabel adaptToTheme fontSize={16} fade labelText="Notification will appear here" />
       </View>
     </View>
   )

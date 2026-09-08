@@ -155,7 +155,7 @@ export default function MapScreen() {
   const handleNotificationPress = () => {
     openSheet({
       content: (
-        <Notifications />
+        <Notifications onHideNotifications={closeSheet} />
       ),
       snapPoints: [availableHeight],
       reduceAnimations: false,
