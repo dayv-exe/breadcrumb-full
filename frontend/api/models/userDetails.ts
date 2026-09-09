@@ -13,6 +13,11 @@ export type loginDetails = {
   password: string
 }
 
+export type UserSharedPageDetails = {
+  userid: string
+  displayName: string
+}
+
 export interface UserDetails {
   type: string | null
   bio: string | null;

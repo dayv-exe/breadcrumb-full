@@ -21,7 +21,7 @@ import Mapbox from "@rnmapbox/maps";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import { ChevronDownIcon, SearchIcon } from "lucide-react-native";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Animated, Dimensions, StyleSheet, useColorScheme, View } from "react-native";
 import { useAnimatedReaction, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -327,8 +327,8 @@ export default function MapScreen() {
 
       <BottomSheet
         ref={bottomSheetRef}
-        enableDynamicSizing
         enableOverDrag
+        enableDynamicSizing={false}
         enableContentPanningGesture
         enableHandlePanningGesture
         enableBlurKeyboardOnGesture
@@ -340,7 +340,7 @@ export default function MapScreen() {
         containerStyle={{
           zIndex: 1000,
         }}
-        snapPoints={[availableHeight]}
+        snapPoints={[screenHeight * .15, availableHeight]}
         backgroundStyle={{
 
           elevation: 10,

@@ -18,7 +18,10 @@ add user search to search tab in map page
 
 friend request accept from list
 remove friend from list
-complete profile page
+complete profile page:
+  add percentage of earth explored
+  countries visited
+  places visited
 block user feature
 
 notifications and background location processing

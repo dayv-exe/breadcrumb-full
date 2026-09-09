@@ -82,7 +82,7 @@ export default function CrumbFeed({ sheetPosition, screenHeight, bottomSheetRef,
           {isOpened && <ChevronDownIcon stroke={textCol} strokeWidth={3.5} size={21} />}
           {!isOpened && <ChevronUpIcon stroke={textCol} strokeWidth={3.5} size={21} />}
         </CustomButton>
-        <CustomLabel adaptToTheme bold fade fontSize={21} labelText="Crumbs" />
+        <CustomLabel adaptToTheme bold fontSize={23} labelText={isOpened ? "Friends" : ""} />
         <CustomButton
           handleClick={onNotificationsPress}
           freed
@@ -135,7 +135,8 @@ const styles = StyleSheet.create({
   },
   feed: {
     paddingTop: 20,
-    paddingHorizontal: 25,
+    paddingLeft: 15,
+    paddingRight: 28,
     width: "100%",
   },
   emptyFeed: {

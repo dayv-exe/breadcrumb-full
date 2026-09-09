@@ -4,14 +4,14 @@ import { useMediaStore } from "@/utils/mediaStore";
 import { useRouter } from "expo-router";
 import { LocateIcon, PlusIcon, SatelliteIcon } from "lucide-react-native";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
-import Reanimated from "react-native-reanimated";
+import Reanimated, { AnimatedStyle } from "react-native-reanimated";
 import CustomButton from "../buttons/CustomButton";
 import CustomLabel from "../CustomLabel";
 import Spacer from "../Spacer";
 
 interface props {
   useSatellite: boolean
-  containerStyle?: StyleProp<ViewStyle>
+  containerStyle?: StyleProp<AnimatedStyle<ViewStyle>>
   backgroundStyle?: StyleProp<ViewStyle>
   pitchToggleVisible: boolean
   onSatellitePress: () => void

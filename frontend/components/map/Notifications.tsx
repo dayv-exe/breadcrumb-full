@@ -34,7 +34,7 @@ export default function Notifications({ onHideNotifications }: props) {
         >
           <ChevronDownIcon stroke={textCol} strokeWidth={3.5} size={23} />
         </CustomButton>
-        <CustomLabel adaptToTheme bold fade fontSize={21} labelText="Notifications" />
+        <CustomLabel adaptToTheme bold fontSize={23} labelText="Notifications" />
       </View>
 
       <View
