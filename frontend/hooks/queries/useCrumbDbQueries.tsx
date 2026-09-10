@@ -1,5 +1,6 @@
 import { getAllCrumbs, getCrumbFeed, getCrumbFromLocal, getCrumbsWith } from "@/api/db/crumbsDb";
 import { CrumbMailbox } from "@/api/models/crumb";
+import { Coordinates } from "@/utils/useLocationStore";
 import {
   useQuery,
   useQueryClient
@@ -39,10 +40,10 @@ export function useCrumbFeed() {
   });
 }
 
-export function useCrumbsWith(userid: string) {
+export function useCrumbsWith(userid: string, coordinate: Coordinates) {
   return useQuery({
     queryKey: ["crumbsWith", userid],
-    queryFn: () => getCrumbsWith(userid),
+    queryFn: () => getCrumbsWith(userid, coordinate.latitude, coordinate.longitude),
   });
 }
 

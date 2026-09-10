@@ -93,7 +93,7 @@ export async function upsertCrumbs(currentUserId: string, crumbs: Crumb[]) {
         columns: [
           "id", "nonCompositeId", "latitude", "longitude", "sender",
           "receiver", "mailbox", "unlocked", "opened", "time",
-          "radius", "locationSelectionManner", "formattedAddress", "placename",
+          "radius", "locationSelectionManner", "formattedAddress", "placename", "otherUser",
         ],
         conflictColumns: ["id"],
         toRows: (crumb) => [[
@@ -111,6 +111,7 @@ export async function upsertCrumbs(currentUserId: string, crumbs: Crumb[]) {
           crumb.locationSelectionManner,
           crumb.formattedAddress,
           crumb.placename,
+          crumb.sender === currentUserId ? crumb.receiver : crumb.sender
         ]],
       },
       {
@@ -269,16 +270,25 @@ export async function getAllCrumbs(mailbox: CrumbMailbox): Promise<Crumb[]> {
   return rows
 }
 
-export async function getCrumbsWith(otherUserid: string): Promise<Crumb[]> {
+export async function getCrumbsWith(
+  otherUserid: string,
+  userLat: number,
+  userLon: number
+): Promise<Crumb[]> {
   const db = await getDb()
   const rows = await db.getAllAsync<Crumb>(
     `SELECT * FROM crumbs
-     WHERE sender = ? OR receiver = ?
-     ORDER BY time ASC`,
-    [otherUserid, otherUserid]
+     WHERE otherUser = ?`,
+    [otherUserid]
   )
 
   return rows
+    .map((crumb) => ({
+      crumb,
+      dist: distanceMeters(userLat, userLon, crumb.latitude, crumb.longitude),
+    }))
+    .sort((a, b) => a.dist - b.dist)
+    .map((x) => x.crumb)
 }
 
 export type FeedItem = {

@@ -28,7 +28,8 @@ async function openAndInit() {
       locationSelectionManner TEXT NOT NULL CHECK(locationSelectionManner IN ('gps', 'label', 'dropped-pin', 'none')),
       radius REAL,
       formattedAddress TEXT,
-      placename TEXT
+      placename TEXT,
+      otherUser TEXT NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS places (

@@ -1,12 +1,16 @@
 import { UserSharedPageDetails } from "@/api/models/userDetails";
 import CustomButton from "@/components/buttons/CustomButton";
+import PreviewBunch from "@/components/camera/PreviewBunch";
+import CrumbSharedItem from "@/components/crumbs/CrumbSharedItem";
 import CustomLabel from "@/components/CustomLabel";
 import CustomProfilePictureCircle from "@/components/profile/CustomProfilePictureCircle";
 import Spacer from "@/components/Spacer";
+import { useCrumbsWith } from "@/hooks/queries/useCrumbDbQueries";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { useLocationStore } from "@/utils/useLocationStore";
 import { colorForUserId } from "@/utils/userColor";
-import { useLocalSearchParams } from "expo-router";
-import { ChevronLeftIcon, MoreHorizontalIcon } from "lucide-react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { ChevronLeftIcon, MoreHorizontalIcon, PlusIcon } from "lucide-react-native";
 import { useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -19,6 +23,14 @@ export default function Shared() {
   const { userid, displayName } = useLocalSearchParams<UserSharedPageDetails>()
   const userCol = colorForUserId(userid)
   const topPadding = insets.top
+  const { data: crumbs, error: crumbsError, isPending: crumbsPending } = useCrumbsWith(userid, useLocationStore.getState().coordinates!)
+  console.log(crumbsError)
+
+  const router = useRouter()
+
+  const handleGoBack = () => {
+    router.dismiss()
+  }
 
   const [headerHeight, setHeaderHeight] = useState(0)
 
@@ -41,27 +53,13 @@ export default function Shared() {
           opacity: .35,
         }} />
         <Spacer size="small" />
-        <CustomButton
-          freed
-          type="theme-faded"
-          customStyle={{
-            marginHorizontal: 15,
-            borderRadius: 10,
-            justifyContent: "flex-start",
-            padding: 20,
-          }}
-        >
-          <View
-            style={{
-              width: 15,
-              height: 15,
-              backgroundColor: userCol,
-              borderRadius: 2.5,
-            }}
-          />
-          <Spacer size="small" />
-          <CustomLabel adaptToTheme width="auto" labelText="Tap to view" />
-        </CustomButton>
+        {
+          crumbs &&
+          crumbs.map(crumb => (
+            <CrumbSharedItem key={crumb.id} crumb={crumb} />
+          ))
+        }
+        <PreviewBunch />
       </ScrollView>
       <View
         style={[styles.header, {
@@ -85,6 +83,7 @@ export default function Shared() {
             width: 50,
             height: 50,
           }}
+          handleClick={handleGoBack}
         >
           <ChevronLeftIcon stroke={textCol} strokeWidth={3.5} size={23} />
         </CustomButton>
@@ -93,9 +92,11 @@ export default function Shared() {
 
           }]}
         >
-          <CustomProfilePictureCircle useUserColor userId={userid} size={40} />
+          <CustomProfilePictureCircle userId={userid} size={40} />
           <Spacer size="small" />
-          <CustomLabel allowTruncate bold fontSize={18} adaptToTheme labelText={displayName} />
+          <CustomLabel allowTruncate bold fontSize={18} adaptToTheme labelText={displayName} customStyle={{
+            color: textCol
+          }} />
         </View>
 
         <CustomButton
@@ -109,6 +110,25 @@ export default function Shared() {
           <MoreHorizontalIcon stroke={textCol} strokeWidth={2} size={27} />
         </CustomButton>
       </View>
+
+      <CustomButton
+        freed
+        type="less-prominent"
+        customStyle={{
+          position: "absolute",
+          width: 60,
+          height: 60,
+          bottom: 25 + insets.bottom,
+          right: 25,
+          elevation: 5,
+          shadowColor: "black",
+          shadowOffset: { height: 1, width: 1 },
+          shadowOpacity: .25,
+          shadowRadius: 10,
+        }}
+      >
+        <PlusIcon stroke="white" strokeWidth={3.5} />
+      </CustomButton>
     </View>
   )
 }
