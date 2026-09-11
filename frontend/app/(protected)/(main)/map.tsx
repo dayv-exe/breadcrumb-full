@@ -20,7 +20,7 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import Mapbox from "@rnmapbox/maps";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
-import { ChevronDownIcon, SearchIcon } from "lucide-react-native";
+import { BellIcon, ChevronDownIcon } from "lucide-react-native";
 import { useEffect, useRef, useState } from "react";
 import { Animated, Dimensions, StyleSheet, useColorScheme, View } from "react-native";
 import { useAnimatedReaction, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
@@ -141,7 +141,13 @@ export default function MapScreen() {
           availableHeight={availableHeight}
           HandleClosePress={closeSheet}
           mapRef={mapRef}
-          OnPlaceSelect={handlePlaceSelected}
+          OnPlaceSelect={id => {
+            bottomSheetRef.current?.collapse()
+            handlePlaceSelected(id)
+          }}
+          OnPersonSelect={id => {
+
+          }}
           sessionToken={sessionToken}
         />
       ),
@@ -270,9 +276,9 @@ export default function MapScreen() {
               customStyle={[styles.shadow, {
                 padding: 10,
               }]}
-              handleClick={handleSearchPress}
+              handleClick={handleNotificationPress}
             >
-              <SearchIcon stroke={getHeaderColors().fgColor} strokeWidth={3} />
+              <BellIcon stroke={getHeaderColors().fgColor} strokeWidth={3} />
             </CustomButton>
             <CustomProfilePictureCircle size={40} handleClick={() => {
               nav.push("/(protected)/(main)/profile")
@@ -340,7 +346,7 @@ export default function MapScreen() {
         containerStyle={{
           zIndex: 1000,
         }}
-        snapPoints={[screenHeight * .15, availableHeight]}
+        snapPoints={[screenHeight * .125, availableHeight]}
         backgroundStyle={{
 
           elevation: 10,
@@ -364,7 +370,7 @@ export default function MapScreen() {
         }}
         animatedPosition={sheetPosition}
       >
-        <CrumbFeed bottomSheetRef={bottomSheetRef} screenHeight={screenHeight} sheetPosition={sheetPosition} onNotificationsPress={handleNotificationPress} />
+        <CrumbFeed bottomSheetRef={bottomSheetRef} screenHeight={screenHeight} sheetPosition={sheetPosition} onSearchPress={handleSearchPress} />
       </BottomSheet>
     </View >
   );

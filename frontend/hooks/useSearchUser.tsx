@@ -15,7 +15,11 @@ interface SearchUserState {
   section: Section
 }
 
-export function useSearchUser(): SearchUserState {
+interface props {
+  onSelect: (userid: string) => void
+}
+
+export function useSearchUser({ onSelect }: props): SearchUserState {
   const [searchStr, setSearchStr] = useState("")
   const [debouncedSearchStr, setDebouncedSearchStr] = useState("")
 
@@ -42,7 +46,7 @@ export function useSearchUser(): SearchUserState {
     isFetchingMore: searchPending,
     keyExtractor: (user: UserDetails) => user.userId!,
     renderItem: (user: UserDetails) => (
-      <SearchResult data={{ type: 'user', user }} onSelect={() => { }} />
+      <SearchResult data={{ type: 'user', user }} onSelect={onSelect} />
     ),
     onEndReached: () => { }
   }

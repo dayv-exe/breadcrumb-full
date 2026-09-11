@@ -14,9 +14,10 @@ import CustomProfilePictureCircle from "../profile/CustomProfilePictureCircle";
 interface props {
   friendId: string
   feedItem: FeedItem
+  simplified?: boolean
 }
 
-export default function CrumbFeedFriend({ feedItem, friendId }: props) {
+export default function CrumbFeedFriend({ feedItem, friendId, simplified }: props) {
   const {
     data: friend,
     error: friendError,
@@ -51,53 +52,82 @@ export default function CrumbFeedFriend({ feedItem, friendId }: props) {
 
   return (
     <TouchableOpacity
-      style={styles.container}
+      style={[styles.container, {
+        width: simplified ? "auto" : "100%",
+      }]}
       onPress={handleShowShared}
       onLongPress={() => { }}
     >
-      <CustomProfilePictureCircle size={52} flat userId={friendId} />
-      <View
-        style={{
-          marginLeft: 15,
-          flexGrow: 1,
-          flexShrink: 1,
-        }}
-      >
-        <CustomLabel allowTruncate adaptToTheme bold={hasCrumb} fontSize={18} labelText={getName()} />
-        <View
-          style={{
-            marginTop: 2,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "flex-start",
+      <View>
+        <CustomProfilePictureCircle
+          size={52}
+          flat={!simplified}
+          userId={friendId}
+          customStyle={{
+            outlineWidth: 0,
+            borderWidth: 1,
+            borderColor: "rgba(0, 0, 0, .1)"
           }}
-        >
-          <View style={{
-            width: 12,
-            height: 12,
-            backgroundColor: hasCrumb ? Colors.light.vibrantButton : "transparent",
-            borderRadius: 3,
-            marginRight: 4,
-            borderWidth: 2,
-            borderColor: Colors.light.vibrantButton,
-          }} />
-          <CustomLabel allowTruncate adaptToTheme bold={hasCrumb} fontSize={13} labelText={
-            hasCrumb ? `${feedItem.crumbs.length} nearby crumb${feedItem.crumbs.length > 1 ? "s" : ""}` : feedItem.action
-          }
-            fade={!hasCrumb}
-            customStyle={{
-              color: hasCrumb ? Colors.light.vibrantButton : textCol
+        />
+
+        {simplified && hasCrumb &&
+          <View
+            style={{
+              position: "absolute",
+              width: 13,
+              height: 13,
+              backgroundColor: "red",
+              borderRadius: 10000,
+              top: 0,
+              right: 0,
             }}
           />
-        </View>
+        }
       </View>
+      {!simplified && <>
+        <View
+          style={{
+            marginLeft: 15,
+            flexGrow: 1,
+            flexShrink: 1,
+          }}
+        >
+          <CustomLabel allowTruncate adaptToTheme bold={hasCrumb} fontSize={18} labelText={getName()} />
+          <View
+            style={{
+              marginTop: 2,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "flex-start",
+            }}
+          >
+            <View style={{
+              width: 12,
+              height: 12,
+              backgroundColor: hasCrumb ? "red" : "transparent",
+              borderRadius: 3,
+              marginRight: 4,
+              borderWidth: 2,
+              borderColor: hasCrumb ? "red" : Colors.light.vibrantButton,
+            }} />
+            <CustomLabel allowTruncate adaptToTheme bold={hasCrumb} fontSize={13} labelText={
+              hasCrumb ? `Tap to view` : feedItem.action
+            }
+              fade={!hasCrumb}
+              customStyle={{
+                color: hasCrumb ? "red" : textCol
+              }}
+            />
+          </View>
+        </View>
 
-      <CustomButton
-        freed
-        type="text"
-      >
-        <CameraIcon stroke={textCol} strokeWidth={2.5} size={23} />
-      </CustomButton>
+        <CustomButton
+          freed
+          type="text"
+        >
+          <CameraIcon stroke={textCol} strokeWidth={2.5} size={23} />
+        </CustomButton>
+      </>}
     </TouchableOpacity>
   )
 }
