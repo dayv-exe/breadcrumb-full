@@ -3,7 +3,6 @@ package models
 import (
 	"backend/constants"
 	"backend/utils"
-	"log"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
@@ -68,6 +67,7 @@ type Crumb struct {
 	Saved                   bool         `json:"saved" dynamodbav:"-"`
 	Unlocked                bool         `json:"unlocked" dynamodbav:"unlocked"`
 	Opened                  bool         `json:"opened" dynamobdav:"opened"`
+	Mailbox                 string       `json:"mailbox" dynamodbav:"mailbox"`
 	FormattedAddress        string       `json:"formattedAddress" dynamodbav:"formattedAddress"`
 	PlaceName               string       `json:"placename" dynamodbav:"placename"`
 
@@ -119,11 +119,14 @@ func IsValidMailbox(mailbox string) bool {
 	return mailbox == constants.MAILBOX_SENT || mailbox == constants.MAILBOX_RECEIVED
 }
 
-func createCrumb(crumbBody *CrumbBody, owner, otherUser, sender, receiver, mailbox string, saved bool) Crumb {
-	if !IsValidMailbox(mailbox) {
-		log.Fatalf("ERROR: invalid mailbox parsed!")
-	}
+func createCrumb(crumbBody *CrumbBody, owner, otherUser, sender, receiver string) Crumb {
 	time := utils.GetNormalDateAndTime()
+
+	mailbox := constants.MAILBOX_RECEIVED
+	if sender == utils.GetAuthenticatedUserid() {
+		mailbox = constants.MAILBOX_SENT
+	}
+
 	return Crumb{
 		Id:                      crumbBody.NonCompositeId + owner + otherUser,
 		NonCompositeId:          crumbBody.NonCompositeId,
@@ -134,9 +137,10 @@ func createCrumb(crumbBody *CrumbBody, owner, otherUser, sender, receiver, mailb
 		Radius:                  crumbBody.Radius,
 		LocationSelectionManner: crumbBody.LocationSelectionManner,
 		Media:                   crumbBody.MediaKeys,
-		Saved:                   saved,
-		Unlocked:                saved,
+		Saved:                   false,
+		Unlocked:                false,
 		Opened:                  false,
+		Mailbox:                 mailbox,
 		FormattedAddress:        crumbBody.Address,
 		Geohash:                 geohash.Encode(crumbBody.Latitude, crumbBody.Longitude),
 		Time:                    time,
@@ -157,8 +161,6 @@ func CreateSentCrumb(body *CrumbBody, sender, receiver string) Crumb {
 		otherUser,
 		sender,
 		receiver,
-		constants.MAILBOX_SENT,
-		false,
 	)
 }
 
@@ -171,20 +173,6 @@ func CreateReceivedCrumb(body *CrumbBody, sender, receiver string) Crumb {
 		otherUser,
 		sender,
 		receiver,
-		constants.MAILBOX_RECEIVED,
-		false,
-	)
-}
-
-func CreateSavedCrumb(body *CrumbBody, owner, otherUser, sender, receiver string) Crumb {
-	return createCrumb(
-		body,
-		owner,
-		otherUser,
-		sender,
-		receiver,
-		constants.MAILBOX_RECEIVED,
-		true,
 	)
 }
 

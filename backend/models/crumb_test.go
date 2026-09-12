@@ -37,6 +37,7 @@ var TestCrumbDbItem = map[string]dbTypes.AttributeValue{
 	"unlocked":         &dbTypes.AttributeValueMemberBOOL{Value: false},
 	"formattedAddress": &dbTypes.AttributeValueMemberS{Value: "1 Test Street"},
 	"placename":        &dbTypes.AttributeValueMemberS{Value: ""},
+	"mailbox":          &dbTypes.AttributeValueMemberS{Value: "received"},
 
 	// gsi owner is the receiver for a received crumb
 	"gsi":   &dbTypes.AttributeValueMemberS{Value: "CRUMB_OWNER#r1"},
@@ -83,6 +84,7 @@ func TestConvertToCrumbs(t *testing.T) {
 	expected.ApplyPrefixes()
 	expected.Owner = ""
 	expected.OtherUser = ""
+	expected.Mailbox = "received"
 
 	results := (*ConvertToCrumbs([]map[string]dbTypes.AttributeValue{TestCrumbDbItem}, func(c *Crumb) {
 
