@@ -157,17 +157,20 @@ func (h *crumbHelper) CrumbExists(ownerId, crumbNonCompositeId string) (bool, er
 
 var defaultCrumbProjection = expression.NamesList(
 	expression.Name("id"),
+	expression.Name("nonCompositeId"),
 	expression.Name("latitude"),
 	expression.Name("longitude"),
-	expression.Name("receiver"),
 	expression.Name("sender"),
-	expression.Name("time"),
+	expression.Name("receiver"),
+	expression.Name("mailbox"),
+	expression.Name("unlocked"),
 	expression.Name("opened"),
-	expression.Name("placeId"),
-	expression.Name("locationSelectionManner"),
+	expression.Name("time"),
 	expression.Name("radius"),
+	expression.Name("locationSelectionManner"),
 	expression.Name("formattedAddress"),
 	expression.Name("placename"),
+	expression.Name("placeId"),
 )
 
 func (h *crumbHelper) GetLatestCrumbs(timestamp, crumbId, otherUser string) (*queryResult[models.Crumb], error) {
