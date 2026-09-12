@@ -71,6 +71,7 @@ func TestCrumb_DatabaseFormat(t *testing.T) {
 	result.Geohash = "hash"
 	result.PlaceId = "p1"
 	result.Time = "100"
+	result.Mailbox = "received"
 
 	AssertDatabaseFormat(t, &result, TestCrumbDbItem, nil)
 }
