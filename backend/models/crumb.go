@@ -123,7 +123,7 @@ func createCrumb(crumbBody *CrumbBody, owner, otherUser, sender, receiver string
 	time := utils.GetNormalDateAndTime()
 
 	mailbox := constants.MAILBOX_RECEIVED
-	if sender == utils.GetAuthenticatedUserid() {
+	if owner == utils.GetAuthenticatedUserid() {
 		mailbox = constants.MAILBOX_SENT
 	}
 
